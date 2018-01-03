@@ -4,5 +4,6 @@ version = "0.1.0"
 authors = ["Andre Ryser <andre.ryser@gmail.com>"]
 
 [dependencies]
-nom = "^3.1"
+pom = "^1.1"
 geo = "^0.4"
+clippy = {version = "*", optional = true}
