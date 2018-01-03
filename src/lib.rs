@@ -8,8 +8,8 @@ use std::char;
 
 use std::collections::HashMap;
 
-extern crate pom;
 extern crate geo;
+extern crate pom;
 
 use geo::Bbox;
 
@@ -51,7 +51,7 @@ pub struct FontMetrics {
     composites: Vec<Composite>,
     kern_pairs: Vec<KernPair>,
     kern_pairs0: Vec<KernPair>,
-    kern_pairs1: Vec<KernPair>
+    kern_pairs1: Vec<KernPair>,
 }
 
 impl Default for FontMetrics {
@@ -63,7 +63,12 @@ impl Default for FontMetrics {
             full_name: String::new(),
             family_name: String::new(),
             weight: String::new(),
-            font_bbox: Bbox{xmin: 0.,  xmax: 0., ymin: 0., ymax: 0.},
+            font_bbox: Bbox {
+                xmin: 0.,
+                xmax: 0.,
+                ymin: 0.,
+                ymax: 0.,
+            },
             font_version: String::new(),
             notice: String::new(),
             encoding_scheme: String::new(),
@@ -94,11 +99,10 @@ impl Default for FontMetrics {
             composites: Vec::new(),
             kern_pairs: Vec::new(),
             kern_pairs0: Vec::new(),
-            kern_pairs1: Vec::new()
+            kern_pairs1: Vec::new(),
         }
     }
 }
-
 
 #[derive(PartialEq, Debug)]
 pub struct CharMetric {
@@ -115,14 +119,19 @@ pub struct CharMetric {
     w: (f64, f64),
     w0: (f64, f64),
     w1: (f64, f64),
-    vv: (f64, f64)
+    vv: (f64, f64),
 }
 
 impl Default for CharMetric {
-    fn default()-> CharMetric {
+    fn default() -> CharMetric {
         CharMetric {
             name: String::new(),
-            bbox: Bbox{xmin: 0.,  xmax: 0., ymin: 0., ymax: 0.},
+            bbox: Bbox {
+                xmin: 0.,
+                xmax: 0.,
+                ymin: 0.,
+                ymax: 0.,
+            },
             ligatures: Vec::new(),
             character_code: 0,
             wx: 0.0,
@@ -131,10 +140,10 @@ impl Default for CharMetric {
             wy: 0.0,
             w0y: 0.0,
             w1y: 0.0,
-            w: (0.0,0.0),
+            w: (0.0, 0.0),
             w0: (0.0, 0.0),
             w1: (0.0, 0.0),
-            vv: (0.0, 0.0)
+            vv: (0.0, 0.0),
         }
     }
 }
@@ -145,7 +154,7 @@ pub struct TrackKern {
     min_point_size: f64,
     min_kern: f64,
     max_point_size: f64,
-    max_kern: f64
+    max_kern: f64,
 }
 
 #[derive(PartialEq, Debug)]
@@ -153,26 +162,26 @@ pub struct KernPair {
     first_kern_character: String,
     second_kern_character: String,
     x: f64,
-    y: f64
+    y: f64,
 }
 
 #[derive(PartialEq, Debug)]
 pub struct Ligature {
     successor: String,
-    ligature: String
+    ligature: String,
 }
 
 #[derive(PartialEq, Debug)]
 pub struct Composite {
     name: String,
-    parts: Vec<CompositePart>
+    parts: Vec<CompositePart>,
 }
 
 #[derive(PartialEq, Debug)]
 pub struct CompositePart {
     name: String,
     x_displacement: i32,
-    y_displacement: i32
+    y_displacement: i32,
 }
 
 fn string_char(c: u8) -> bool {
@@ -188,7 +197,7 @@ fn digit(c: u8) -> bool {
 }
 
 fn space() -> Parser<u8, ()> {
-	is_a(char_class::space).repeat(1..).discard()
+    is_a(char_class::space).repeat(1..).discard()
 }
 
 fn eol() -> Parser<u8, ()> {
@@ -210,13 +219,20 @@ fn boolean() -> Parser<u8, bool> {
 }
 
 fn integer() -> Parser<u8, i32> {
-	  let integer = sym(b'-').opt() - (one_of(b"123456789") - one_of(b"0123456789").repeat(0..) | sym(b'0'));
-    integer.collect().convert(String::from_utf8).convert(|s| i32::from_str(&s))
+    let integer =
+        sym(b'-').opt() - (one_of(b"123456789") - one_of(b"0123456789").repeat(0..) | sym(b'0'));
+    integer
+        .collect()
+        .convert(String::from_utf8)
+        .convert(|s| i32::from_str(&s))
 }
 
 fn uinteger() -> Parser<u8, u32> {
-	  let integer = one_of(b"123456789") - one_of(b"0123456789").repeat(0..) | sym(b'0');
-    integer.collect().convert(String::from_utf8).convert(|s| u32::from_str(&s))
+    let integer = one_of(b"123456789") - one_of(b"0123456789").repeat(0..) | sym(b'0');
+    integer
+        .collect()
+        .convert(String::from_utf8)
+        .convert(|s| u32::from_str(&s))
 }
 
 fn hex_integer() -> Parser<u8, i32> {
@@ -225,16 +241,24 @@ fn hex_integer() -> Parser<u8, i32> {
 }
 
 fn number() -> Parser<u8, f64> {
-	  let integer = one_of(b"123456789") - one_of(b"0123456789").repeat(0..) | sym(b'0');
-	  let frac = sym(b'.') + one_of(b"0123456789").repeat(1..);
-	  let exp = one_of(b"eE") + one_of(b"+-").opt() + one_of(b"0123456789").repeat(1..);
-	  let number = sym(b'-').opt() + integer + frac.opt() + exp.opt();
-	  number.collect().convert(String::from_utf8).convert(|s| f64::from_str(&s))
+    let integer = one_of(b"123456789") - one_of(b"0123456789").repeat(0..) | sym(b'0');
+    let frac = sym(b'.') + one_of(b"0123456789").repeat(1..);
+    let exp = one_of(b"eE") + one_of(b"+-").opt() + one_of(b"0123456789").repeat(1..);
+    let number = sym(b'-').opt() + integer + frac.opt() + exp.opt();
+    number
+        .collect()
+        .convert(String::from_utf8)
+        .convert(|s| f64::from_str(&s))
 }
 
 fn bbox() -> Parser<u8, Bbox<f64>> {
     let numbers = (number() - space()).repeat(3) + number();
-    numbers.map(|(nums, num)| Bbox {xmin: nums[0], xmax: nums[1], ymin: nums[2], ymax: num})
+    numbers.map(|(nums, num)| Bbox {
+        xmin: nums[0],
+        xmax: nums[1],
+        ymin: nums[2],
+        ymax: num,
+    })
 }
 
 // Combinators
@@ -243,32 +267,53 @@ fn start_command(command: &'static [u8]) -> Parser<u8, ()> {
     (seq(command) * space()).discard()
 }
 
-fn string_command(command: &'static [u8], build: &'static Fn(String) -> Command) -> Parser<u8, Command> {
+fn string_command(
+    command: &'static [u8],
+    build: &'static Fn(String) -> Command,
+) -> Parser<u8, Command> {
     start_command(command) * string().map(build)
 }
 
-fn integer_command(command: &'static [u8], build: &'static Fn(i32) -> Command) -> Parser<u8, Command> {
+fn integer_command(
+    command: &'static [u8],
+    build: &'static Fn(i32) -> Command,
+) -> Parser<u8, Command> {
     start_command(command) * integer().map(build)
 }
 
-fn uinteger_command(command: &'static [u8], build: &'static Fn(u32) -> Command) -> Parser<u8, Command> {
+fn uinteger_command(
+    command: &'static [u8],
+    build: &'static Fn(u32) -> Command,
+) -> Parser<u8, Command> {
     start_command(command) * uinteger().map(build)
 }
 
-fn number_command(command: &'static [u8], build: &'static Fn(f64) -> Command) -> Parser<u8, Command> {
+fn number_command(
+    command: &'static [u8],
+    build: &'static Fn(f64) -> Command,
+) -> Parser<u8, Command> {
     start_command(command) * number().map(build)
 }
 
-fn bool_command(command: &'static [u8], build: &'static Fn(bool) -> Command) -> Parser<u8, Command> {
+fn bool_command(
+    command: &'static [u8],
+    build: &'static Fn(bool) -> Command,
+) -> Parser<u8, Command> {
     start_command(command) * boolean().map(build)
 }
 
-fn bbox_command(command: &'static [u8], build: &'static Fn(Bbox<f64>) -> Command) -> Parser<u8, Command> {
+fn bbox_command(
+    command: &'static [u8],
+    build: &'static Fn(Bbox<f64>) -> Command,
+) -> Parser<u8, Command> {
     start_command(command) * bbox().map(build)
 }
 
-fn num_num_command(command: &'static [u8], build: &'static Fn(f64,f64) -> Command) -> Parser<u8, Command> {
-    start_command(command) * (number() - space() + number()).map(move |(a,b)| build(a,b))
+fn num_num_command(
+    command: &'static [u8],
+    build: &'static Fn(f64, f64) -> Command,
+) -> Parser<u8, Command> {
+    start_command(command) * (number() - space() + number()).map(move |(a, b)| build(a, b))
 }
 
 // Kern Pairs
@@ -276,12 +321,11 @@ fn kp_cmd() -> Parser<u8, KernPair> {
     let cmd = seq(b"KP") - space();
     let names = name() - space() + name() - space();
     let nums = number() - space() + number();
-    cmd * (names + nums).map(move |((n1, n2),(numx,numy))| {
-        KernPair {first_kern_character: n1,
-                  second_kern_character: n2,
-                  x: numx,
-                  y: numy
-        }
+    cmd * (names + nums).map(move |((n1, n2), (numx, numy))| KernPair {
+        first_kern_character: n1,
+        second_kern_character: n2,
+        x: numx,
+        y: numy,
     })
 }
 
@@ -298,12 +342,11 @@ fn kph_cmd() -> Parser<u8, KernPair> {
     let cmd = seq(b"KPH") - space();
     let names = hex_string() - space() + hex_string() - space();
     let nums = number() - space() + number();
-    cmd * (names + nums).map(move |((n1, n2),(numx,numy))| {
-        KernPair {first_kern_character: n1,
-                  second_kern_character: n2,
-                  x: numx,
-                  y: numy
-        }
+    cmd * (names + nums).map(move |((n1, n2), (numx, numy))| KernPair {
+        first_kern_character: n1,
+        second_kern_character: n2,
+        x: numx,
+        y: numy,
     })
 }
 
@@ -311,12 +354,11 @@ fn kpx_cmd() -> Parser<u8, KernPair> {
     let cmd = seq(b"KPX") - space();
     let names = name() - space() + name() - space();
     let num = number();
-    cmd * (names + num).map(|((name1, name2),num)| {
-        KernPair {first_kern_character: name1,
-                  second_kern_character: name2,
-                  x: num,
-                  y: 0.0
-        }
+    cmd * (names + num).map(|((name1, name2), num)| KernPair {
+        first_kern_character: name1,
+        second_kern_character: name2,
+        x: num,
+        y: 0.0,
     })
 }
 
@@ -324,12 +366,11 @@ fn kpy_cmd() -> Parser<u8, KernPair> {
     let cmd = seq(b"KPY") - space();
     let names = name() - space() + name() - space();
     let num = number();
-    cmd * (names + num).map(|((name1, name2),num)| {
-        KernPair {first_kern_character: name1,
-                  second_kern_character: name2,
-                  x: 0.0,
-                  y: num
-        }
+    cmd * (names + num).map(|((name1, name2), num)| KernPair {
+        first_kern_character: name1,
+        second_kern_character: name2,
+        x: 0.0,
+        y: num,
     })
 }
 
@@ -348,34 +389,31 @@ fn kern_pairs() -> Parser<u8, (Option<u8>, Vec<KernPair>)> {
 
 fn track_kern() -> Parser<u8, TrackKern> {
     let begin = seq(b"TrackKern") - space();
-    let num_space = || { number() - space() };
+    let num_space = || number() - space();
     let content = integer() - space() + num_space() + num_space() + num_space() + num_space();
-    begin * content.map(|((((deg, min_size), min_kern), max_size), max_kern)| {
-        TrackKern {
-            degree: deg,
-            min_point_size: min_size,
-            min_kern: min_kern,
-            max_point_size: max_size,
-            max_kern: max_kern
-        }
-    })
+    begin
+        * content.map(
+            |((((deg, min_size), min_kern), max_size), max_kern)| TrackKern {
+                degree: deg,
+                min_point_size: min_size,
+                min_kern: min_kern,
+                max_point_size: max_size,
+                max_kern: max_kern,
+            },
+        )
 }
 
 fn track_kerns() -> Parser<u8, Vec<TrackKern>> {
     let begin = (seq(b"StartTrackKern") - space()) * uinteger() - eol();
-    begin >> move |len| {
-        (track_kern() - eol()).repeat(len as usize) - seq(b"EndTrackKern") - eol()
-    }
+    begin >> move |len| (track_kern() - eol()).repeat(len as usize) - seq(b"EndTrackKern") - eol()
 }
 
 fn kern_data() -> Parser<u8, Vec<KernDataCmd>> {
-    let kernpairs = kern_pairs().map(|(idx,pairs)| {
-        match idx {
-            Some(0) => KernDataCmd::Kernpairs0(pairs),
-            Some(1) => KernDataCmd::Kernpairs1(pairs),
-            Some(_) => { unreachable!() }
-            None => KernDataCmd::Kernpairs(pairs)
-        }
+    let kernpairs = kern_pairs().map(|(idx, pairs)| match idx {
+        Some(0) => KernDataCmd::Kernpairs0(pairs),
+        Some(1) => KernDataCmd::Kernpairs1(pairs),
+        Some(_) => unreachable!(),
+        None => KernDataCmd::Kernpairs(pairs),
     });
     let trackkern = track_kerns().map(|kerns| KernDataCmd::TrackKern(kerns));
     let begin = seq(b"StartKernData") - eol().repeat(1..);
@@ -383,31 +421,34 @@ fn kern_data() -> Parser<u8, Vec<KernDataCmd>> {
     begin * content - seq(b"EndKernData")
 }
 
-
 // Composites
 
 fn composite_part() -> Parser<u8, CompositePart> {
-    let params = (name() - space() + integer() - space() + integer())
-        .map(|((n,x),y)| CompositePart{name: n, x_displacement: x, y_displacement: y});
+    let params =
+        (name() - space() + integer() - space() + integer()).map(|((n, x), y)| CompositePart {
+            name: n,
+            x_displacement: x,
+            y_displacement: y,
+        });
     (seq(b"PCC") - space()) * params
 }
 
 fn composite() -> Parser<u8, Composite> {
-    (seq(b"CC") - space()) * name() - space() + uinteger() >>
-        |(name, len):(String,u32)| {
-            (space() * composite_part()).repeat(len as usize).map(move |parts| {
-                Composite {name: name.to_owned(), parts: parts}
+    (seq(b"CC") - space()) * name() - space() + uinteger() >> |(name, len): (String, u32)| {
+        (space() * composite_part())
+            .repeat(len as usize)
+            .map(move |parts| Composite {
+                name: name.to_owned(),
+                parts: parts,
             })
-        }
+    }
 }
 
 fn composites() -> Parser<u8, Vec<Composite>> {
-    (seq(b"StartComposites") - space()) * uinteger() - eol().repeat(1..) >>
-        move |len| {
-            (composite() - eol().repeat(1..)).repeat(len as usize) - seq(b"EndComposites")
-        }
+    (seq(b"StartComposites") - space()) * uinteger() - eol().repeat(1..) >> move |len| {
+        (composite() - eol().repeat(1..)).repeat(len as usize) - seq(b"EndComposites")
+    }
 }
-
 
 // Char Metrics
 
@@ -426,11 +467,14 @@ enum CharMetricCommand {
     VV(f64, f64),
     N(String),
     B(Bbox<f64>),
-    L(Ligature)
+    L(Ligature),
 }
 
 fn ligature() -> Parser<u8, Ligature> {
-    (name() - space() + name()).map(|(s,l)| Ligature {successor: s, ligature: l})
+    (name() - space() + name()).map(|(s, l)| Ligature {
+        successor: s,
+        ligature: l,
+    })
 }
 
 fn charcommand() -> Parser<u8, CharMetricCommand> {
@@ -442,40 +486,46 @@ fn charcommand() -> Parser<u8, CharMetricCommand> {
         | (seq(b"WY") - space()) * number().map(&CharMetricCommand::WY)
         | (seq(b"W0Y") - space()) * number().map(&CharMetricCommand::W0Y)
         | (seq(b"W1Y") - space()) * number().map(&CharMetricCommand::W1Y)
-        | (seq(b"W") - space()) * (number() - space() + number()).map(|(x,y)| CharMetricCommand::W(x,y))
-        | (seq(b"W0") - space()) * (number() - space() + number()).map(|(x,y)| CharMetricCommand::W0(x,y))
-        | (seq(b"W1") - space()) * (number() - space() + number()).map(|(x,y)| CharMetricCommand::W1(x,y))
-        | (seq(b"VV") - space()) * (number() - space() + number()).map(|(x,y)| CharMetricCommand::VV(x,y))
+        | (seq(b"W") - space())
+            * (number() - space() + number()).map(|(x, y)| CharMetricCommand::W(x, y))
+        | (seq(b"W0") - space())
+            * (number() - space() + number()).map(|(x, y)| CharMetricCommand::W0(x, y))
+        | (seq(b"W1") - space())
+            * (number() - space() + number()).map(|(x, y)| CharMetricCommand::W1(x, y))
+        | (seq(b"VV") - space())
+            * (number() - space() + number()).map(|(x, y)| CharMetricCommand::VV(x, y))
         | (sym(b'N') - space()) * name().map(CharMetricCommand::N)
         | (sym(b'B') - space()) * bbox().map(CharMetricCommand::B)
         | (sym(b'L') - space()) * ligature().map(CharMetricCommand::L)
 }
 
 fn char_metric() -> Parser<u8, CharMetric> {
-    let seperator = || { space().opt() * sym(b';') - space().opt() };
+    let seperator = || space().opt() * sym(b';') - space().opt();
     let cmds = list(charcommand(), seperator()) - seperator().opt();
-    cmds.map(|commands| commands.into_iter().fold(
-        CharMetric::default(),
-        |mut metric: CharMetric, command: CharMetricCommand| {
-            match command {
-                CharMetricCommand::C(c) => metric.character_code = c,
-                CharMetricCommand::WX(wx) => metric.wx = wx,
-                CharMetricCommand::W0X(w0x) => metric.w0x = w0x,
-                CharMetricCommand::W1X(w1x) => metric.w1x = w1x,
-                CharMetricCommand::WY(wy) => metric.wy = wy,
-                CharMetricCommand::W0Y(w0y) => metric.w0y = w0y,
-                CharMetricCommand::W1Y(w1y) => metric.w1y = w1y,
-                CharMetricCommand::W(w1, w2) => metric.w = (w1, w2),
-                CharMetricCommand::W0(w1, w2) => metric.w0 = (w1, w2),
-                CharMetricCommand::W1(w1, w2) => metric.w1 = (w1, w2),
-                CharMetricCommand::VV(vv1, vv2) => metric.vv = (vv1, vv2),
-                CharMetricCommand::N(name) => metric.name = name,
-                CharMetricCommand::B(bbox) => metric.bbox = bbox,
-                CharMetricCommand::L(lig) => metric.ligatures.push(lig)
-            }
-            metric
-        }
-    ))
+    cmds.map(|commands| {
+        commands.into_iter().fold(
+            CharMetric::default(),
+            |mut metric: CharMetric, command: CharMetricCommand| {
+                match command {
+                    CharMetricCommand::C(c) => metric.character_code = c,
+                    CharMetricCommand::WX(wx) => metric.wx = wx,
+                    CharMetricCommand::W0X(w0x) => metric.w0x = w0x,
+                    CharMetricCommand::W1X(w1x) => metric.w1x = w1x,
+                    CharMetricCommand::WY(wy) => metric.wy = wy,
+                    CharMetricCommand::W0Y(w0y) => metric.w0y = w0y,
+                    CharMetricCommand::W1Y(w1y) => metric.w1y = w1y,
+                    CharMetricCommand::W(w1, w2) => metric.w = (w1, w2),
+                    CharMetricCommand::W0(w1, w2) => metric.w0 = (w1, w2),
+                    CharMetricCommand::W1(w1, w2) => metric.w1 = (w1, w2),
+                    CharMetricCommand::VV(vv1, vv2) => metric.vv = (vv1, vv2),
+                    CharMetricCommand::N(name) => metric.name = name,
+                    CharMetricCommand::B(bbox) => metric.bbox = bbox,
+                    CharMetricCommand::L(lig) => metric.ligatures.push(lig),
+                }
+                metric
+            },
+        )
+    })
 }
 
 fn char_metrics() -> Parser<u8, Vec<CharMetric>> {
@@ -486,7 +536,8 @@ fn char_metrics() -> Parser<u8, Vec<CharMetric>> {
 }
 
 fn comment() -> Parser<u8, Command> {
-    let cmd = (seq(b"Comment") - space()) * string().opt().map(|o| o.unwrap_or_else(|| String::new()));
+    let cmd =
+        (seq(b"Comment") - space()) * string().opt().map(|o| o.unwrap_or_else(|| String::new()));
     cmd.map(Command::Comment)
 }
 
@@ -494,7 +545,7 @@ fn comment() -> Parser<u8, Command> {
 
 #[derive(PartialEq, Debug)]
 enum Command {
-//    AfmVersion((i32, i32)),
+    //    AfmVersion((i32, i32)),
     MetricsSet(i32),
     FontName(String),
     FullName(String),
@@ -525,7 +576,7 @@ enum Command {
     IsFixedPitch(bool),
     CharMetrics(Vec<CharMetric>),
     Composites(Vec<Composite>),
-    KernData(Vec<KernDataCmd>)
+    KernData(Vec<KernDataCmd>),
 }
 
 #[derive(PartialEq, Debug)]
@@ -533,102 +584,101 @@ enum KernDataCmd {
     TrackKern(Vec<TrackKern>),
     Kernpairs(Vec<KernPair>),
     Kernpairs0(Vec<KernPair>),
-    Kernpairs1(Vec<KernPair>)
+    Kernpairs1(Vec<KernPair>),
 }
 
 fn command<'a>() -> Parser<u8, Command> {
-    comment()
-    | string_command(b"Version", &Command::Version)
-    | integer_command(b"MetricsSet", &Command::MetricsSet)
-    | string_command(b"FontName", &Command::FontName)
-    | string_command(b"FullName", &Command::FullName)
-    | string_command(b"FamilyName", &Command::FamilyName)
-    | string_command(b"Weight", &Command::Weight)
-    | bbox_command(b"FontBBox", &Command::FontBBox)
-    | string_command(b"Weight", &Command::Weight)
-    | string_command(b"Version", &Command::Version)
-    | string_command(b"Notice", &Command::Notice)
-    | string_command(b"EncodingScheme", &Command::EncodingScheme)
-    | uinteger_command(b"MappingScheme", &Command::MappingScheme)
-    | uinteger_command(b"EscChar", &Command::EscChar)
-    | string_command(b"CharacterSet", &Command::CharacterSet)
-    | uinteger_command(b"Characters", &Command::Characters)
-    | bool_command(b"IsBaseFont", &Command::IsBaseFont)
-    | num_num_command(b"VVector", &Command::VVector)
-    | bool_command(b"IsFixedV", &Command::IsFixedV)
-    | number_command(b"CapHeight", &Command::CapHeight)
-    | number_command(b"XHeight", &Command::XHeight)
-    | number_command(b"Ascender", &Command::Ascender)
-    | number_command(b"Descender", &Command::Descender)
-    | number_command(b"StdHW", &Command::StdHW)
-    | number_command(b"StdVW", &Command::StdVW)
-    | number_command(b"UnderlinePosition", &Command::UnderlinePosition)
-    | number_command(b"UnderlineThickness", &Command::UnderlineThickness)
-    | number_command(b"ItalicAngle", &Command::ItalicAngle)
-    | num_num_command(b"CharWidth", &Command::CharWidth)
-    | bool_command(b"IsFixedPitch", &Command::IsFixedPitch)
-    | char_metrics().map(Command::CharMetrics)
-    | composites().map(Command::Composites)
-    | kern_data().map(Command::KernData)
+    comment() | string_command(b"Version", &Command::Version)
+        | integer_command(b"MetricsSet", &Command::MetricsSet)
+        | string_command(b"FontName", &Command::FontName)
+        | string_command(b"FullName", &Command::FullName)
+        | string_command(b"FamilyName", &Command::FamilyName)
+        | string_command(b"Weight", &Command::Weight)
+        | bbox_command(b"FontBBox", &Command::FontBBox)
+        | string_command(b"Weight", &Command::Weight)
+        | string_command(b"Version", &Command::Version)
+        | string_command(b"Notice", &Command::Notice)
+        | string_command(b"EncodingScheme", &Command::EncodingScheme)
+        | uinteger_command(b"MappingScheme", &Command::MappingScheme)
+        | uinteger_command(b"EscChar", &Command::EscChar)
+        | string_command(b"CharacterSet", &Command::CharacterSet)
+        | uinteger_command(b"Characters", &Command::Characters)
+        | bool_command(b"IsBaseFont", &Command::IsBaseFont)
+        | num_num_command(b"VVector", &Command::VVector)
+        | bool_command(b"IsFixedV", &Command::IsFixedV)
+        | number_command(b"CapHeight", &Command::CapHeight)
+        | number_command(b"XHeight", &Command::XHeight)
+        | number_command(b"Ascender", &Command::Ascender)
+        | number_command(b"Descender", &Command::Descender)
+        | number_command(b"StdHW", &Command::StdHW) | number_command(b"StdVW", &Command::StdVW)
+        | number_command(b"UnderlinePosition", &Command::UnderlinePosition)
+        | number_command(b"UnderlineThickness", &Command::UnderlineThickness)
+        | number_command(b"ItalicAngle", &Command::ItalicAngle)
+        | num_num_command(b"CharWidth", &Command::CharWidth)
+        | bool_command(b"IsFixedPitch", &Command::IsFixedPitch)
+        | char_metrics().map(Command::CharMetrics) | composites().map(Command::Composites)
+        | kern_data().map(Command::KernData)
 }
 
 // Public functions
 
-
 pub fn afm() -> Parser<u8, FontMetrics> {
-    let begin = start_command(b"StartFontMetrics") * (is_a(digit) - sym(b'.') + is_a(digit)) - eol();
+    let begin =
+        start_command(b"StartFontMetrics") * (is_a(digit) - sym(b'.') + is_a(digit)) - eol();
     let end = eol().opt() * seq(b"EndFontMetrics") * eol().repeat(0..) * end();
     let elems = list(command(), eol());
 
     let commands = begin * elems.expect("AFM commands") - end.expect("EndFontMetrics");
-    commands.map(|commands| commands.into_iter().fold(
-        FontMetrics::default(),
-        |mut metric: FontMetrics, command: Command| {
-            match command {
-                Command::MetricsSet(metric_sets) => metric.metric_sets = metric_sets,
-                Command::FontName(name) => metric.font_name = name,
-                Command::FullName(name) => metric.full_name = name,
-                Command::FamilyName(name) => metric.family_name = name,
-                Command::Weight(weight) => metric.weight = weight,
-                Command::FontBBox(bbox) => metric.font_bbox = bbox,
-                Command::Version(version) => metric.font_version = version,
-                Command::Notice(notice) => metric.notice = notice,
-                Command::EncodingScheme(scheme) => metric.encoding_scheme = scheme,
-                Command::MappingScheme(scheme) => metric.mapping_scheme = scheme,
-                Command::EscChar(c) => metric.esc_char = c,
-                Command::CharacterSet(charset) => metric.character_set = charset,
-                Command::Characters(c) => metric.characters = c,
-                Command::IsBaseFont(base_font) => metric.is_base_font = base_font,
-                Command::VVector(v1,v2) => metric.v_vector = (v1,v2),
-                Command::IsFixedV(fixed) => metric.is_fixed_v = fixed,
-                Command::CapHeight(height) => metric.cap_height = height,
-                Command::XHeight(height) => metric.x_height = height,
-                Command::Ascender(asc) => metric.ascender = asc,
-                Command::Descender(desc) => metric.descender = desc,
-                Command::StdHW(stdhw) => metric.standard_horizontal_width = stdhw,
-                Command::StdVW(stdvw) => metric.standard_vertical_width = stdvw,
-                Command::Comment(comment) => metric.comments.push(comment),
-                Command::UnderlinePosition(pos) => metric.underline_position = pos,
-                Command::UnderlineThickness(thickness) => metric.underline_thickness = thickness,
-                Command::ItalicAngle(angle) => metric.italic_angle = angle,
-                Command::CharWidth(w1, w2) => metric.char_width = (w1, w2),
-                Command::IsFixedPitch(fixed) => metric.is_fixed_pitch = fixed,
-                Command::CharMetrics(char_metrics) => metric.char_metrics = char_metrics,
-                Command::Composites(composites) => metric.composites = composites,
-                Command::KernData(cmds) => {
-                    for cmd in cmds {
+    commands.map(|commands| {
+        commands.into_iter().fold(
+            FontMetrics::default(),
+            |mut metric: FontMetrics, command: Command| {
+                match command {
+                    Command::MetricsSet(metric_sets) => metric.metric_sets = metric_sets,
+                    Command::FontName(name) => metric.font_name = name,
+                    Command::FullName(name) => metric.full_name = name,
+                    Command::FamilyName(name) => metric.family_name = name,
+                    Command::Weight(weight) => metric.weight = weight,
+                    Command::FontBBox(bbox) => metric.font_bbox = bbox,
+                    Command::Version(version) => metric.font_version = version,
+                    Command::Notice(notice) => metric.notice = notice,
+                    Command::EncodingScheme(scheme) => metric.encoding_scheme = scheme,
+                    Command::MappingScheme(scheme) => metric.mapping_scheme = scheme,
+                    Command::EscChar(c) => metric.esc_char = c,
+                    Command::CharacterSet(charset) => metric.character_set = charset,
+                    Command::Characters(c) => metric.characters = c,
+                    Command::IsBaseFont(base_font) => metric.is_base_font = base_font,
+                    Command::VVector(v1, v2) => metric.v_vector = (v1, v2),
+                    Command::IsFixedV(fixed) => metric.is_fixed_v = fixed,
+                    Command::CapHeight(height) => metric.cap_height = height,
+                    Command::XHeight(height) => metric.x_height = height,
+                    Command::Ascender(asc) => metric.ascender = asc,
+                    Command::Descender(desc) => metric.descender = desc,
+                    Command::StdHW(stdhw) => metric.standard_horizontal_width = stdhw,
+                    Command::StdVW(stdvw) => metric.standard_vertical_width = stdvw,
+                    Command::Comment(comment) => metric.comments.push(comment),
+                    Command::UnderlinePosition(pos) => metric.underline_position = pos,
+                    Command::UnderlineThickness(thickness) => {
+                        metric.underline_thickness = thickness
+                    }
+                    Command::ItalicAngle(angle) => metric.italic_angle = angle,
+                    Command::CharWidth(w1, w2) => metric.char_width = (w1, w2),
+                    Command::IsFixedPitch(fixed) => metric.is_fixed_pitch = fixed,
+                    Command::CharMetrics(char_metrics) => metric.char_metrics = char_metrics,
+                    Command::Composites(composites) => metric.composites = composites,
+                    Command::KernData(cmds) => for cmd in cmds {
                         match cmd {
                             KernDataCmd::TrackKern(kerns) => metric.track_kern = kerns,
                             KernDataCmd::Kernpairs(pairs) => metric.kern_pairs = pairs,
                             KernDataCmd::Kernpairs0(pairs) => metric.kern_pairs0 = pairs,
-                            KernDataCmd::Kernpairs1(pairs) => metric.kern_pairs1 = pairs
+                            KernDataCmd::Kernpairs1(pairs) => metric.kern_pairs1 = pairs,
                         }
-                    }
+                    },
                 }
-            }
-            metric
-        }
-    ))
+                metric
+            },
+        )
+    })
 }
 
 #[cfg(test)]
@@ -721,11 +771,16 @@ EndFontMetrics
                 println!("Parse file {}", path.display());
                 let mut file = File::open(&path).expect("Could not open an asset file");
                 let mut v = Vec::new();
-                file.read_to_end(&mut v).expect(&format!("Could not read {}", path.display()));
+                file.read_to_end(&mut v)
+                    .expect(&format!("Could not read {}", path.display()));
 
                 let mut buf = DataInput::new(&v);
                 let parse_result = afm().parse(&mut buf);
-                assert!(parse_result.is_ok(), "Could not parse the asset file {}", path.display());
+                assert!(
+                    parse_result.is_ok(),
+                    "Could not parse the asset file {}",
+                    path.display()
+                );
             }
         }
     }
