@@ -1,2 +1,3 @@
 # afm-rs
-A afm parser
+
+A library to parse Adobe afm files

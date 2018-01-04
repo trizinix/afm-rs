@@ -1,9 +1,16 @@
 [package]
 name = "afm"
 version = "0.1.0"
-authors = ["Andre Ryser <andre.ryser@gmail.com>"]
+authors = ["trizinix"]
+license = "MIT/Apache-2.0"
+readme = "README.md"
+repository = "https://github.com/trizinix/afm-rs"
+homepage = "https://github.com/rust-lang/afm-rs"
+documentation = "http://doc.rust-lang.org/afm-rs"
+description = """
+A library to parse Adobe afm files
+"""
 
 [dependencies]
 pom = "^1.1"
 geo = "^0.4"
-clippy = {version = "*", optional = true}
