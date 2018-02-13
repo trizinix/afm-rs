@@ -15,43 +15,43 @@ use geo::Bbox;
 
 #[derive(PartialEq, Debug)]
 pub struct FontMetrics {
-    metric_sets: i32,
-    font_name: String,
-    full_name: String,
-    family_name: String,
-    weight: String,
-    font_bbox: Bbox<f64>,
-    font_version: String,
-    notice: String,
-    encoding_scheme: String,
-    mapping_scheme: u32,
-    esc_char: u32,
-    character_set: String,
-    characters: u32,
-    is_base_font: bool,
-    v_vector: (f64, f64),
-    is_fixed_v: bool,
-    cap_height: f64,
-    x_height: f64,
-    ascender: f64,
-    descender: f64,
-    comments: Vec<String>,
+    pub metric_sets: i32,
+    pub font_name: String,
+    pub full_name: String,
+    pub family_name: String,
+    pub weight: String,
+    pub font_bbox: Bbox<f64>,
+    pub font_version: String,
+    pub notice: String,
+    pub encoding_scheme: String,
+    pub mapping_scheme: u32,
+    pub esc_char: u32,
+    pub character_set: String,
+    pub characters: u32,
+    pub is_base_font: bool,
+    pub v_vector: (f64, f64),
+    pub is_fixed_v: bool,
+    pub cap_height: f64,
+    pub x_height: f64,
+    pub ascender: f64,
+    pub descender: f64,
+    pub comments: Vec<String>,
 
-    underline_position: f64,
-    underline_thickness: f64,
-    italic_angle: f64,
-    char_width: (f64, f64),
-    is_fixed_pitch: bool,
-    standard_horizontal_width: f64,
-    standard_vertical_width: f64,
+    pub underline_position: f64,
+    pub underline_thickness: f64,
+    pub italic_angle: f64,
+    pub char_width: (f64, f64),
+    pub is_fixed_pitch: bool,
+    pub standard_horizontal_width: f64,
+    pub standard_vertical_width: f64,
 
-    char_metrics: Vec<CharMetric>,
-    char_metrics_map: HashMap<String, CharMetric>,
-    track_kern: Vec<TrackKern>,
-    composites: Vec<Composite>,
-    kern_pairs: Vec<KernPair>,
-    kern_pairs0: Vec<KernPair>,
-    kern_pairs1: Vec<KernPair>,
+    pub char_metrics: Vec<CharMetric>,
+    pub char_metrics_map: HashMap<String, CharMetric>,
+    pub track_kern: Vec<TrackKern>,
+    pub composites: Vec<Composite>,
+    pub kern_pairs: Vec<KernPair>,
+    pub kern_pairs0: Vec<KernPair>,
+    pub kern_pairs1: Vec<KernPair>,
 }
 
 impl Default for FontMetrics {
@@ -106,20 +106,20 @@ impl Default for FontMetrics {
 
 #[derive(PartialEq, Debug)]
 pub struct CharMetric {
-    name: String,
-    bbox: Bbox<f64>,
-    ligatures: Vec<Ligature>,
-    character_code: i32,
-    wx: f64,
-    w0x: f64,
-    w1x: f64,
-    wy: f64,
-    w0y: f64,
-    w1y: f64,
-    w: (f64, f64),
-    w0: (f64, f64),
-    w1: (f64, f64),
-    vv: (f64, f64),
+    pub name: String,
+    pub bbox: Bbox<f64>,
+    pub ligatures: Vec<Ligature>,
+    pub character_code: i32,
+    pub wx: f64,
+    pub w0x: f64,
+    pub w1x: f64,
+    pub wy: f64,
+    pub w0y: f64,
+    pub w1y: f64,
+    pub w: (f64, f64),
+    pub w0: (f64, f64),
+    pub w1: (f64, f64),
+    pub vv: (f64, f64),
 }
 
 impl Default for CharMetric {
@@ -150,38 +150,38 @@ impl Default for CharMetric {
 
 #[derive(PartialEq, Debug)]
 pub struct TrackKern {
-    degree: i32,
-    min_point_size: f64,
-    min_kern: f64,
-    max_point_size: f64,
-    max_kern: f64,
+    pub degree: i32,
+    pub min_point_size: f64,
+    pub min_kern: f64,
+    pub max_point_size: f64,
+    pub max_kern: f64,
 }
 
 #[derive(PartialEq, Debug)]
 pub struct KernPair {
-    first_kern_character: String,
-    second_kern_character: String,
-    x: f64,
-    y: f64,
+    pub first_kern_character: String,
+    pub second_kern_character: String,
+    pub x: f64,
+    pub y: f64,
 }
 
 #[derive(PartialEq, Debug)]
 pub struct Ligature {
-    successor: String,
-    ligature: String,
+    pub successor: String,
+    pub ligature: String,
 }
 
 #[derive(PartialEq, Debug)]
 pub struct Composite {
-    name: String,
-    parts: Vec<CompositePart>,
+    pub name: String,
+    pub parts: Vec<CompositePart>,
 }
 
 #[derive(PartialEq, Debug)]
 pub struct CompositePart {
-    name: String,
-    x_displacement: i32,
-    y_displacement: i32,
+    pub name: String,
+    pub x_displacement: i32,
+    pub y_displacement: i32,
 }
 
 fn string_char(c: u8) -> bool {
